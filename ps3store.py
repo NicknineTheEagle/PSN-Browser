@@ -4,9 +4,14 @@ import json
 
 interactive=False
 
+# Sony server does not like the default user agent for some reason.
+httpHeaders = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:127.0) Gecko/20100101 Firefox/127.0"
+}
+
 def parseContent(contentId,language,region,age):
     url="https://store.playstation.com/store/api/chihiro/00_09_000/container/%s/%s/%d/%s" % (region,language,age,contentId)
-    req=requests.get(url)
+    req=requests.get(url,headers=httpHeaders)
     if req.status_code!=200:
         print("%s failed - %d!" % (url,req.status_code))
         return None
@@ -33,7 +38,7 @@ def parseContent(contentId,language,region,age):
         for rel in data["relationships"]:
             print(" "*2+rel["name"]+":")
             url=rel["url"]
-            req=requests.get(url)
+            req=requests.get(url,headers=httpHeaders)
             if req.status_code!=200:
                 print("%s failed - %d!" % (url,req.status_code))
                 continue
@@ -71,7 +76,7 @@ def parseContent(contentId,language,region,age):
 
 def searchStore(searchStr,language,region,age,platform):
     url="https://store.playstation.com/store/api/chihiro/00_09_000/tumbler/%s/%s/%d/%s?platform=%s&size=100" % (region,language,age,searchStr,platform)
-    req=requests.get(url)
+    req=requests.get(url,headers=httpHeaders)
     if req.status_code!=200:
         print("%s failed - %d!" % (url,req.status_code))
         return None
